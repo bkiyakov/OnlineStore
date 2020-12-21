@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OnlineStore.API.Data;
+using OnlineStore.Application.Repositories.Interfaces;
+using OnlineStore.Data;
+using OnlineStore.Data.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +35,12 @@ namespace OnlineStore.API
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDbContext<StoreDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("StoreDbConnection")));
+
+            services.AddTransient<IProductRepository, ProductRepository>();
+
             services.AddRazorPages();
         }
 

@@ -5,6 +5,15 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <form method="post">
+        <label>Code</label>
+        <input asp-for="Product.Code" />
+        <label>Name</label>
+        <input asp-for="Product.Name" />
+        <label>Price</label>
+        <input asp-for="Product.Price" />
+        <label>Category</label>
+        <input asp-for="Product.Category" />
+        <input type="submit" value="Добавить" />
+    </form>
 </div>
