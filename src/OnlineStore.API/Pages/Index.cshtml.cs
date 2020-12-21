@@ -18,6 +18,7 @@ namespace OnlineStore.API.Pages
 
         [BindProperty]
         public ProductViewModel Product { get; set; }
+        public IEnumerable<ProductViewModel> Products { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IProductRepository productRepository)
         {
@@ -27,7 +28,15 @@ namespace OnlineStore.API.Pages
 
         public void OnGet()
         {
+            var productsFromRepo = productRepository.GetAllProducts();
 
+            Products = productsFromRepo.Select(p => new ProductViewModel
+            {
+                Code = p.Code,
+                Name = p.Name,
+                Price = p.Price,
+                Category = p.Category
+            });
         }
 
         public async Task<IActionResult> OnPost()
