@@ -26,9 +26,9 @@ namespace OnlineStore.API.Pages
             this.productRepository = productRepository;
         }
 
-        public void OnGet()
+        public async Task OnGet()
         {
-            var productsFromRepo = productRepository.GetAllProducts();
+            var productsFromRepo = await productRepository.GetAllProducts();
 
             Products = productsFromRepo.Select(p => new ProductViewModel
             {

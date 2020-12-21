@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OnlineStore.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -14,5 +15,18 @@ namespace OnlineStore.Application.ViewModels
         public decimal Price { get; set; }
         [StringLength(30)]
         public string Category { get; set; }
+
+        public ProductViewModel()
+        {
+
+        }
+
+        public ProductViewModel(Product product)
+        {
+            Code = product.Code;
+            Name = product.Name;
+            Price = product.Price;
+            Category = product.Category;
+        }
     }
 }
