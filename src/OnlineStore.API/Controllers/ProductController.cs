@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OnlineStore.Application.Exceptions;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Application.ViewModels;
 using OnlineStore.Domain.Models;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.API.Controllers
 {
+    // TODO обработка исключений
     [ApiController]
     [Route("api/product")]
     public class ProductController : ControllerBase
@@ -40,9 +42,9 @@ namespace OnlineStore.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductById(string productId)
         {
-            Guid productIdg = Guid.Parse(productId);
+            Guid productGuid = Guid.Parse(productId);
 
-            Product product = await productRepository.GetProductByIdAsync(productIdg);
+            Product product = await productRepository.GetProductByIdAsync(productGuid);
 
             return Ok(new ProductViewModel(product));
         }
@@ -63,6 +65,69 @@ namespace OnlineStore.API.Controllers
             };
 
             await productRepository.AddProductAsync(product);
+
+            return Ok();
+        }
+
+        [Route("get-categories")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var categories = await productRepository.GetAllCategoriesAsync();
+
+            return Ok(categories);
+        }
+
+        //[Authorize(Role="Manager")]
+        [Route("delete/{productId}")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProduct(string productId)
+        {
+            Guid productGuid = Guid.Parse(productId);
+
+            // TODO Найти более элегантный способ
+            try
+            {
+                await productRepository.DeleteProductByIdAsync(productGuid);
+            } catch (NotFoundException ex)
+            {
+                return NotFound(productGuid);
+            } catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+
+            return Ok();
+        }
+
+        //[Authorize(Role="Manager")]
+        [Route("update/{productId}")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductViewModel model, string productId)
+        {
+            Guid productGuid = Guid.Parse(productId);
+
+            Product product = new Product
+            {
+                Id = productGuid,
+                Code = model.Code,
+                Name = model.Name,
+                Category = model.Category
+            };
+
+            // TODO Найти более элегантный способ
+            try
+            {
+                await productRepository.UpdateProductAsync(product);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(productGuid);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
 
             return Ok();
         }
