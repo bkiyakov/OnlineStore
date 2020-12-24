@@ -58,6 +58,13 @@ namespace OnlineStore.Data.Repositories
             return await context.Products.FindAsync(productId);
         }
 
+        public async Task<IEnumerable<Product>> GetProductsInCategoryAsync(string categoryName)
+        {
+            var products = await context.Products.Where(p => p.Category == categoryName).ToListAsync();
+
+            return products;
+        }
+
         public async Task UpdateProductAsync(Product product)
         {
             Product productFromDb = await context.Products.FindAsync(product.Id);

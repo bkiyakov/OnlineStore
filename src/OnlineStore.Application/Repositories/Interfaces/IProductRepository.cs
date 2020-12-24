@@ -15,5 +15,6 @@ namespace OnlineStore.Application.Repositories.Interfaces
         Task AddProductAsync(Product newProduct);
         Task DeleteProductByIdAsync(Guid productId);
         Task UpdateProductAsync(Product product);
+        Task<IEnumerable<Product>> GetProductsInCategoryAsync(string categoryName);
     }
 }

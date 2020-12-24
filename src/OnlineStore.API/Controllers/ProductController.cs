@@ -131,5 +131,14 @@ namespace OnlineStore.API.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        [Route("get-in-category/{categoryName}")]
+        public async Task<IActionResult> GetProductsInCategory(string categoryName)
+        {
+            var products = await productRepository.GetProductsInCategoryAsync(categoryName);
+
+            return Ok(products);
+        }
     }
 }
