@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using System.IO;
+using OnlineStore.Application.Services.Interfaces;
+using OnlineStore.Application.Services;
 
 namespace OnlineStore.API
 {
@@ -44,6 +46,12 @@ namespace OnlineStore.API
                     Configuration.GetConnectionString("StoreDbConnection")));
 
             services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IOrderRepository, OrderRepository>();
+            services.AddTransient<IOrderElementRepository, OrderElementRepository>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+            services.AddScoped<IOrderElementService, OrderElementService>();
+            services.AddScoped<IProductService, ProductService>();
 
             services.AddRazorPages();
             services.AddControllers().AddNewtonsoftJson();
