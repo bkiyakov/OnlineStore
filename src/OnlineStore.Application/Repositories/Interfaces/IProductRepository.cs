@@ -12,7 +12,7 @@ namespace OnlineStore.Application.Repositories.Interfaces
         Task<Product> GetProductByIdAsync(Guid productId);
         Task<Product> GetProductByCodeAsync(string productCode);
         Task<IEnumerable<string>> GetAllCategoriesAsync();
-        Task AddProductAsync(Product newProduct);
+        Task<Product> AddProductAsync(Product newProduct);
         Task DeleteProductByIdAsync(Guid productId);
         Task UpdateProductAsync(Product product);
         Task<IEnumerable<Product>> GetProductsInCategoryAsync(string categoryName);

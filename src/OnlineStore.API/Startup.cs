@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,15 +9,10 @@ using OnlineStore.API.Data;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Data;
 using OnlineStore.Data.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Diagnostics;
-using System.IO;
 using OnlineStore.Application.Services.Interfaces;
 using OnlineStore.Application.Services;
+using AutoMapper;
+using OnlineStore.Application.Mapper;
 
 namespace OnlineStore.API
 {
@@ -52,6 +44,9 @@ namespace OnlineStore.API
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IOrderElementService, OrderElementService>();
             services.AddScoped<IProductService, ProductService>();
+
+
+            services.AddAutoMapper(typeof(MapperProfiles));
 
             services.AddRazorPages();
             services.AddControllers().AddNewtonsoftJson();

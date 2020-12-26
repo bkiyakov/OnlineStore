@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using OnlineStore.Application.Repositories.Interfaces;
-using OnlineStore.Application.ViewModels;
+using OnlineStore.API.Models;
 using OnlineStore.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OnlineStore.Application.Dtos;
 
 namespace OnlineStore.API.Pages
 {
@@ -17,8 +18,8 @@ namespace OnlineStore.API.Pages
         private readonly IProductRepository productRepository;
 
         [BindProperty]
-        public ProductViewModel Product { get; set; }
-        public IEnumerable<ProductViewModel> Products { get; set; }
+        public ProductAddInputModel Product { get; set; }
+        public IEnumerable<ProductDto> Products { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IProductRepository productRepository)
         {
@@ -30,7 +31,7 @@ namespace OnlineStore.API.Pages
         {
             var productsFromRepo = await productRepository.GetAllProducts();
 
-            Products = productsFromRepo.Select(p => new ProductViewModel
+            Products = productsFromRepo.Select(p => new ProductDto
             {
                 Code = p.Code,
                 Name = p.Name,

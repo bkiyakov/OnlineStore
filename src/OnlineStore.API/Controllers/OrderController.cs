@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OnlineStore.API.Models;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Application.Services.Interfaces;
 using OnlineStore.Application.ViewModels;
@@ -43,7 +44,7 @@ namespace OnlineStore.API.Controllers
 
             var addedOrder = await orderService.AddOrderAsync(model, userId);
 
-            return Ok(addedOrder);
+            return Ok(new OrderResponseModel(addedOrder));
         }
 
         [HttpGet]

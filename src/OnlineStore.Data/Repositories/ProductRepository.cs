@@ -18,10 +18,13 @@ namespace OnlineStore.Data.Repositories
             this.context = context;
         }
 
-        public async Task AddProductAsync(Product newProduct)
+        public async Task<Product> AddProductAsync(Product newProduct)
         {
-            context.Add(newProduct);
+            var addedProduct = context.Add(newProduct);
+
             await context.SaveChangesAsync();
+
+            return addedProduct.Entity;
         }
 
         public async Task DeleteProductByIdAsync(Guid productId)

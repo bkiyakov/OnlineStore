@@ -25,7 +25,7 @@ namespace OnlineStore.Application.Services
         {
             var itemPrice = await productService.GetProductPriceByIdAsync(productId);
             var discount = await discountService.GetCustomerDiscountPercentAsync(order.CustomerId);
-            var totalPrice = itemPrice * ((100 - (decimal)discount) / 100) * productCount;
+            var totalPrice = itemPrice * ((100 - (decimal)discount) / 100);
 
             OrderElement orderElement = new OrderElement
             {
