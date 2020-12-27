@@ -10,5 +10,7 @@ namespace OnlineStore.Application.Services.Interfaces
     public interface IOrderService
     {
         Task<OrderDto> AddOrderAsync(ListOfProductsAndCountsDto productsAndCountsList, int userId);
+
+        Task ConfirmOrder(Guid orderId, DateTime shipmentDate);
     }
 }

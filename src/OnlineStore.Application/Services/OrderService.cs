@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using OnlineStore.Application.Exceptions;
 
 namespace OnlineStore.Application.Services
 {
@@ -50,6 +51,24 @@ namespace OnlineStore.Application.Services
             }
 
             return addedOrderDto;
+        }
+
+        public async Task ConfirmOrder(Guid orderId, DateTime shipmentDate)
+        {
+            // Получаем заказ
+            var order = await orderRepository.GetOrderByIdAsync(orderId);
+            // Проверка на null (если null - NotFound)
+            if (order == null) throw new NotFoundException();
+
+            // Проверка дата доставки > даты заказа
+            if (shipmentDate.Date < order.OrderDate.Date
+                || shipmentDate.Date < DateTime.UtcNow.Date)
+                throw new ApplicationException("Дата доставки не может быть меньше даты заказа или сегодня");
+
+            // Изменение и обновление заказа
+            order.ShipmentDate = shipmentDate;
+            order.SetStatus(Order.StatusInProgress);
+            await orderRepository.UpdateOrderAsync(order);
         }
     }
 }

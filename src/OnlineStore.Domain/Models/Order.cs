@@ -27,9 +27,9 @@ namespace OnlineStore.Domain.Models
         public string Status { get; private set; }
         public virtual IEnumerable<OrderElement> Items { get; set; }
 
-        private const string StatusNew = "Новый";
-        private const string StatusInProgress = "Выполняется";
-        private const string StatusDone = "Выполнен";
+        public const string StatusNew = "Новый";
+        public const string StatusInProgress = "Выполняется";
+        public const string StatusDone = "Выполнен";
 
         public Order()
         {
@@ -37,15 +37,34 @@ namespace OnlineStore.Domain.Models
             Status = StatusNew;
         }
 
-        public void SetInProgress()
+        public void SetStatus(string status)
         {
-            // TODO добавить проверку на статус
+            switch (status)
+            {
+                case StatusInProgress:
+                    SetInProgress();
+                    break;
+                case StatusDone:
+                    SetInDone();
+                    break;
+                default:
+                    throw new ApplicationException($"Заказ не может быть установлен в статус {status}");
+            }
+        }
+
+        private void SetInProgress()
+        {
+            if (Status != StatusNew && Status != StatusInProgress)
+                throw new ApplicationException($"Товар не находится в статусе {StatusNew}");
+
             Status = StatusInProgress;
         }
 
-        public void SetInDone()
+        private void SetInDone()
         {
-            // TODO добавить проверку на статус
+            if (Status != StatusInProgress && Status != StatusDone)
+                throw new ApplicationException($"Товар не находится в статусе {StatusInProgress}");
+
             Status = StatusDone;
         }
     }

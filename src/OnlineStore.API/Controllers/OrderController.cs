@@ -74,6 +74,22 @@ namespace OnlineStore.API.Controllers
             return Ok(addedOrder);
         }
 
+        [HttpPost]
+        [Route("confirm-order/{orderId}")]
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> ConfirmOrder(string orderId,
+            [FromBody] OrderConfirmInputModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            Guid orderIdGuid = Guid.Parse(orderId);
+
+            await orderService.ConfirmOrder(orderIdGuid, model.ShipmentDate);
+
+            return Ok();
+        }
+
         [HttpGet]
         [Route("test")]
         public IActionResult Test()

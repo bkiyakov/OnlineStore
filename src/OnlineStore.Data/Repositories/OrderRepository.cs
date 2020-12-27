@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OnlineStore.Application.Exceptions;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Domain.Models;
 using System;
@@ -44,14 +45,25 @@ namespace OnlineStore.Data.Repositories
             return await context.GetNextOrderNumberAsync();
         }
 
-        public Task<Order> GetOrderByIdAsync(Guid orderId)
+        public async Task<Order> GetOrderByIdAsync(Guid orderId)
         {
-            throw new NotImplementedException();
+            return await context.Orders.FindAsync(orderId);
         }
 
-        public Task UpdateOrderAsync(Order order)
+        public async Task UpdateOrderAsync(Order order)
         {
-            throw new NotImplementedException();
+            Order orderFromDb = await context.Orders.FindAsync(order.Id);
+
+            if (orderFromDb == null) throw new NotFoundException();
+
+            orderFromDb.CustomerId = order.CustomerId;
+            orderFromDb.OrderDate = order.OrderDate;
+            orderFromDb.ShipmentDate = order.ShipmentDate;
+            orderFromDb.SetStatus(order.Status);
+            orderFromDb.OrderNumber = order.OrderNumber; // Надо ли?
+
+            if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
+                throw new ApplicationException("Не удалось обновить заказ в БД");
         }
     }
 }
