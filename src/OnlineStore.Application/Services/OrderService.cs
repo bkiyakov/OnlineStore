@@ -1,11 +1,12 @@
 ﻿using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Application.Services.Interfaces;
-using OnlineStore.Application.ViewModels;
+using OnlineStore.Application.Dtos;
 using OnlineStore.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace OnlineStore.Application.Services
 {
@@ -13,12 +14,17 @@ namespace OnlineStore.Application.Services
     {
         private readonly IOrderRepository orderRepository;
         private readonly IOrderElementService orderElementService;
-        public OrderService(IOrderRepository orderRepository, IOrderElementService orderElementService)
+        private readonly IMapper mapper;
+        public OrderService(IOrderRepository orderRepository,
+            IOrderElementService orderElementService,
+            IMapper mapper)
         {
             this.orderRepository = orderRepository;
             this.orderElementService = orderElementService;
+            this.mapper = mapper;
         }
-        public async Task<Order> AddOrderAsync(OrderViewModel orderViewModel, int userId)
+        public async Task<OrderDto> AddOrderAsync(ListOfProductsAndCountsDto productsAndCountsList,
+            int userId)
         {
             // Получаем id заказчика по id пользователя
             Guid customerId = Guid.NewGuid(); // TODO поменять на реальное получение
@@ -31,15 +37,19 @@ namespace OnlineStore.Application.Services
 
             var addedOrder = await orderRepository.AddOrderAsync(order);
 
-            foreach(var productAndCount in orderViewModel.ProductsIdAndCountsList)
+            var addedOrderDto = mapper.Map<OrderDto>(addedOrder);
+
+            foreach (var productAndCount in productsAndCountsList.ProductsIdAndCountsList)
             {
                 Guid productId = Guid.Parse(productAndCount.ProductId);
                 int productCount = productAndCount.ProductCount;
 
-                await orderElementService.AddOrderElementAsync(addedOrder, productId, productCount);
+                var addedOrderElementDto = await orderElementService.AddOrderElementAsync(addedOrderDto, customerId, productId, productCount);
+
+                addedOrderDto.Items.Add(addedOrderElementDto);
             }
 
-            return addedOrder;
+            return addedOrderDto;
         }
     }
 }

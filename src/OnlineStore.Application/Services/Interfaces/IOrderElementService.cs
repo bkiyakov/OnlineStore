@@ -1,4 +1,5 @@
-﻿using OnlineStore.Domain.Models;
+﻿using OnlineStore.Application.Dtos;
+using OnlineStore.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,6 +9,7 @@ namespace OnlineStore.Application.Services.Interfaces
 {
     public interface IOrderElementService
     {
-        Task<OrderElement> AddOrderElementAsync(Order order, Guid productId, int productCount);
+        Task<OrderElementDto> AddOrderElementAsync(OrderDto order, Guid customerId,
+            Guid productId, int productCount);
     }
 }

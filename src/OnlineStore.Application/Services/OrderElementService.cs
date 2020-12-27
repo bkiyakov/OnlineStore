@@ -1,4 +1,6 @@
-﻿using OnlineStore.Application.Repositories.Interfaces;
+﻿using AutoMapper;
+using OnlineStore.Application.Dtos;
+using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Application.Services.Interfaces;
 using OnlineStore.Domain.Models;
 using System;
@@ -13,18 +15,22 @@ namespace OnlineStore.Application.Services
         private readonly IOrderElementRepository orderElementRepository;
         private readonly IProductService productService;
         private readonly IDiscountService discountService;
+        private readonly IMapper mapper;
         public OrderElementService(IOrderElementRepository orderElementRepository,
             IDiscountService discountService,
-            IProductService productService)
+            IProductService productService,
+            IMapper mapper)
         {
             this.orderElementRepository = orderElementRepository;
             this.discountService = discountService;
             this.productService = productService;
+            this.mapper = mapper;
         }
-        public async Task<OrderElement> AddOrderElementAsync(Order order, Guid productId, int productCount)
+        public async Task<OrderElementDto> AddOrderElementAsync(OrderDto order, Guid customerId,
+            Guid productId,int productCount)
         {
             var itemPrice = await productService.GetProductPriceByIdAsync(productId);
-            var discount = await discountService.GetCustomerDiscountPercentAsync(order.CustomerId);
+            var discount = await discountService.GetCustomerDiscountPercentAsync(customerId);
             var totalPrice = itemPrice * ((100 - (decimal)discount) / 100);
 
             OrderElement orderElement = new OrderElement
@@ -35,7 +41,10 @@ namespace OnlineStore.Application.Services
                 ItemPrice = totalPrice
             };
 
-            return await orderElementRepository.AddOrdeElementAsync(orderElement);
+            var addedOrderElement = await orderElementRepository.AddOrdeElementAsync(orderElement);
+            var result = mapper.Map<OrderElementDto>(addedOrderElement);
+
+            return result;
         }
     }
 }

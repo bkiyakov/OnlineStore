@@ -1,4 +1,4 @@
-﻿using OnlineStore.Application.ViewModels;
+﻿using OnlineStore.Application.Dtos;
 using OnlineStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +9,6 @@ namespace OnlineStore.Application.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<Order> AddOrderAsync(OrderViewModel orderViewModel, int userId);
+        Task<OrderDto> AddOrderAsync(ListOfProductsAndCountsDto productsAndCountsList, int userId);
     }
 }
