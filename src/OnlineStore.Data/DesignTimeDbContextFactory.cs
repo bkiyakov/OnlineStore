@@ -19,6 +19,7 @@ namespace OnlineStore.Data
             var builder = new DbContextOptionsBuilder<StoreDbContext>();
             var connectionString = configuration.GetConnectionString("StoreDbConnection");
             builder.UseSqlServer(connectionString);
+
             return new StoreDbContext(builder.Options);
         }
     }

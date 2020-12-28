@@ -11,8 +11,10 @@ namespace OnlineStore.Application.Repositories.Interfaces
         Task<IEnumerable<Product>> GetAllProducts();
         Task<Product> GetProductByIdAsync(Guid productId);
         Task<Product> GetProductByCodeAsync(string productCode);
-        Task<HashSet<string>> GetAllCategories();
-        Task AddProductAsync(Product newProduct);
-        Task DeleteProductById(int productId);
+        Task<IEnumerable<string>> GetAllCategoriesAsync();
+        Task<Product> AddProductAsync(Product newProduct);
+        Task DeleteProductByIdAsync(Guid productId);
+        Task UpdateProductAsync(Product product);
+        Task<IEnumerable<Product>> GetProductsInCategoryAsync(string categoryName);
     }
 }

@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using System.Linq;
+using OnlineStore.Application.Exceptions;
 
 namespace OnlineStore.Data.Repositories
 {
@@ -16,20 +18,32 @@ namespace OnlineStore.Data.Repositories
             this.context = context;
         }
 
-        public async Task AddProductAsync(Product newProduct)
+        public async Task<Product> AddProductAsync(Product newProduct)
         {
-            context.Add(newProduct);
+            var addedProduct = context.Add(newProduct);
+
             await context.SaveChangesAsync();
+
+            return addedProduct.Entity;
         }
 
-        public Task DeleteProductById(int productId)
+        public async Task DeleteProductByIdAsync(Guid productId)
         {
-            throw new NotImplementedException();
+            Product product = await context.Products.FindAsync(productId);
+
+            if (product == null) throw new NotFoundException();
+
+            context.Products.Remove(product);
+
+            if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
+                throw new ApplicationException("Не удалось удалить товар в БД");
         }
 
-        public Task<HashSet<string>> GetAllCategories()
+        public async Task<IEnumerable<string>> GetAllCategoriesAsync()
         {
-            throw new NotImplementedException();
+            var categories =  await context.Set<Product>().Select(p => p.Category).Distinct().ToListAsync();
+
+            return categories;
         }
 
         public async Task<IEnumerable<Product>> GetAllProducts()
@@ -45,6 +59,27 @@ namespace OnlineStore.Data.Repositories
         public async Task<Product> GetProductByIdAsync(Guid productId)
         {
             return await context.Products.FindAsync(productId);
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsInCategoryAsync(string categoryName)
+        {
+            var products = await context.Products.Where(p => p.Category == categoryName).ToListAsync();
+
+            return products;
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            Product productFromDb = await context.Products.FindAsync(product.Id);
+
+            if (productFromDb == null) throw new NotFoundException();
+
+            productFromDb.Code = product.Code;
+            productFromDb.Name = product.Name;
+            productFromDb.Category = product.Category;
+
+            if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
+                throw new ApplicationException("Не удалось обновить товар в БД");
         }
     }
 }
