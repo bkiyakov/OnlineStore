@@ -9,5 +9,6 @@ namespace OnlineStore.Application.Repositories.Interfaces
     public interface IOrderElementRepository
     {
         Task<OrderElement> AddOrdeElementAsync(OrderElement newOrderElement);
+        Task DeleteOrderElementByIdAsync(Guid orderElementId);
     }
 }

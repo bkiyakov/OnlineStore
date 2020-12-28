@@ -25,9 +25,16 @@ namespace OnlineStore.Data.Repositories
             return addedOrder.Entity;
         }
 
-        public Task DeleteOrderByIdAsync(Guid orderId)
+        public async Task DeleteOrderByIdAsync(Guid orderId)
         {
-            throw new NotImplementedException();
+            Order order = await context.Orders.FindAsync(orderId);
+
+            if (order == null) throw new NotFoundException();
+
+            context.Orders.Remove(order);
+
+            if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
+                throw new ApplicationException("Не удалось удалить заказ в БД");
         }
 
         public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -59,7 +66,7 @@ namespace OnlineStore.Data.Repositories
             orderFromDb.CustomerId = order.CustomerId;
             orderFromDb.OrderDate = order.OrderDate;
             orderFromDb.ShipmentDate = order.ShipmentDate;
-            orderFromDb.SetStatus(order.Status);
+            orderFromDb.Status = order.Status;
             orderFromDb.OrderNumber = order.OrderNumber; // Надо ли?
 
             if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления

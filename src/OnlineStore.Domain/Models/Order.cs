@@ -24,48 +24,21 @@ namespace OnlineStore.Domain.Models
         public DateTime? ShipmentDate { get; set; }
         [Column("Order_Number")]
         public int OrderNumber { get; set; }
-        public string Status { get; private set; }
+        public string Status { get; set; }
         public virtual IEnumerable<OrderElement> Items { get; set; }
 
-        public const string StatusNew = "Новый";
-        public const string StatusInProgress = "Выполняется";
-        public const string StatusDone = "Выполнен";
 
         public Order()
         {
             OrderDate = DateTime.UtcNow;
-            Status = StatusNew;
+            Status = OrderStatus.New;
         }
+    }
 
-        public void SetStatus(string status)
-        {
-            switch (status)
-            {
-                case StatusInProgress:
-                    SetInProgress();
-                    break;
-                case StatusDone:
-                    SetInDone();
-                    break;
-                default:
-                    throw new ApplicationException($"Заказ не может быть установлен в статус {status}");
-            }
-        }
-
-        private void SetInProgress()
-        {
-            if (Status != StatusNew && Status != StatusInProgress)
-                throw new ApplicationException($"Товар не находится в статусе {StatusNew}");
-
-            Status = StatusInProgress;
-        }
-
-        private void SetInDone()
-        {
-            if (Status != StatusInProgress && Status != StatusDone)
-                throw new ApplicationException($"Товар не находится в статусе {StatusInProgress}");
-
-            Status = StatusDone;
-        }
+    public static class OrderStatus
+    {
+        public const string New = "Новый";
+        public const string InProgress = "Выполняется";
+        public const string Done = "Выполнен";
     }
 }

@@ -36,7 +36,7 @@ namespace OnlineStore.Data.Repositories
             context.Products.Remove(product);
 
             if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
-                throw new ApplicationException("Не удалось сохранить товар в БД");
+                throw new ApplicationException("Не удалось удалить товар в БД");
         }
 
         public async Task<IEnumerable<string>> GetAllCategoriesAsync()

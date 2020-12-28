@@ -11,6 +11,8 @@ namespace OnlineStore.Application.Services.Interfaces
     {
         Task<OrderDto> AddOrderAsync(ListOfProductsAndCountsDto productsAndCountsList, int userId);
 
-        Task ConfirmOrder(Guid orderId, DateTime shipmentDate);
+        Task ConfirmOrderAsync(Guid orderId, DateTime shipmentDate);
+        Task CloseOrderAsync(Guid orderId);
+        Task DeleteOrderAsync(Guid orderId);
     }
 }

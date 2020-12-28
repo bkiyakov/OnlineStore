@@ -74,6 +74,7 @@ namespace OnlineStore.API.Controllers
             return Ok(addedOrder);
         }
 
+        //[Authorize(Role="Manager")]
         [HttpPost]
         [Route("confirm-order/{orderId}")]
         [Consumes("application/json")]
@@ -85,7 +86,33 @@ namespace OnlineStore.API.Controllers
 
             Guid orderIdGuid = Guid.Parse(orderId);
 
-            await orderService.ConfirmOrder(orderIdGuid, model.ShipmentDate);
+            await orderService.ConfirmOrderAsync(orderIdGuid, model.ShipmentDate);
+
+            return Ok();
+        }
+
+        //[Authorize(Role="Manager")]
+        [HttpPost]
+        [Route("close-order/{orderId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> CloseOrder(string orderId)
+        {
+            Guid orderIdGuid = Guid.Parse(orderId);
+
+            await orderService.CloseOrderAsync(orderIdGuid);
+
+            return Ok();
+        }
+
+        //[Authorize(Role="User")]
+        [HttpPost]
+        [Route("delete-order/{orderId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteOrder(string orderId)
+        {
+            Guid orderIdGuid = Guid.Parse(orderId);
+
+            await orderService.DeleteOrderAsync(orderIdGuid);
 
             return Ok();
         }

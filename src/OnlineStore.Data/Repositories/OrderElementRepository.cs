@@ -1,4 +1,5 @@
-﻿using OnlineStore.Application.Repositories.Interfaces;
+﻿using OnlineStore.Application.Exceptions;
+using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,18 @@ namespace OnlineStore.Data.Repositories
             await context.SaveChangesAsync();
 
             return addedOrderElement.Entity;
+        }
+
+        public async Task DeleteOrderElementByIdAsync(Guid orderElementId)
+        {
+            OrderElement orderElement = await context.OrderElements.FindAsync(orderElementId);
+
+            if (orderElement == null) throw new NotFoundException();
+
+            context.OrderElements.Remove(orderElement);
+
+            if ((await context.SaveChangesAsync()) < 1) // TODO отлавливать ошибку неудачного обновления
+                throw new ApplicationException("Не удалось удалить элемент заказа в БД");
         }
     }
 }

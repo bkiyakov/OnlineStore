@@ -14,13 +14,16 @@ namespace OnlineStore.Application.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository orderRepository;
+        private readonly IOrderElementRepository orderElementRepository;
         private readonly IOrderElementService orderElementService;
         private readonly IMapper mapper;
         public OrderService(IOrderRepository orderRepository,
+            IOrderElementRepository orderElementRepository,
             IOrderElementService orderElementService,
             IMapper mapper)
         {
             this.orderRepository = orderRepository;
+            this.orderElementRepository = orderElementRepository;
             this.orderElementService = orderElementService;
             this.mapper = mapper;
         }
@@ -53,7 +56,7 @@ namespace OnlineStore.Application.Services
             return addedOrderDto;
         }
 
-        public async Task ConfirmOrder(Guid orderId, DateTime shipmentDate)
+        public async Task ConfirmOrderAsync(Guid orderId, DateTime shipmentDate)
         {
             // Получаем заказ
             var order = await orderRepository.GetOrderByIdAsync(orderId);
@@ -67,8 +70,48 @@ namespace OnlineStore.Application.Services
 
             // Изменение и обновление заказа
             order.ShipmentDate = shipmentDate;
-            order.SetStatus(Order.StatusInProgress);
+
+            if (order.Status != OrderStatus.New)
+                throw new ApplicationException($"Товар не находится в статусе {OrderStatus.New}");
+
+            order.Status = OrderStatus.InProgress;
+
             await orderRepository.UpdateOrderAsync(order);
+        }
+        public async Task CloseOrderAsync(Guid orderId)
+        {
+            // Получаем заказ
+            var order = await orderRepository.GetOrderByIdAsync(orderId);
+            // Проверка на null (если null - NotFound)
+            if (order == null) throw new NotFoundException();
+
+            if (order.Status != OrderStatus.InProgress)
+                throw new ApplicationException($"Товар не находится в статусе {OrderStatus.InProgress}");
+
+            order.Status = OrderStatus.Done;
+
+            await orderRepository.UpdateOrderAsync(order);
+        }
+
+        public async Task DeleteOrderAsync(Guid orderId)
+        {
+            // Получаем заказ
+            var order = await orderRepository.GetOrderByIdAsync(orderId);
+            // Проверка на null (если null - NotFound)
+            if (order == null) throw new NotFoundException();
+
+            if (order.Status != OrderStatus.New)
+                throw new ApplicationException($"Товар не находится в статусе {OrderStatus.New}");
+
+            await orderRepository.DeleteOrderByIdAsync(orderId);
+
+            if (order.Items != null)
+            {
+                foreach (var orderElement in order.Items)
+                {
+                    await orderElementRepository.DeleteOrderElementByIdAsync(orderElement.Id);
+                }
+            }
         }
     }
 }
