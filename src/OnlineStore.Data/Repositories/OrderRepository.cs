@@ -47,6 +47,17 @@ namespace OnlineStore.Data.Repositories
             return orders;
         }
 
+        public async Task<IList<Order>> GetAllOrdersWithPagingAsync(int pageNumber, int pageSize)
+        {
+            return await context.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .OrderBy(o => o.OrderNumber)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public async Task<int> GetNewOrderNumberAsync()
         {
             return await context.GetNextOrderNumberAsync();
