@@ -14,5 +14,6 @@ namespace OnlineStore.Application.Services.Interfaces
         Task ConfirmOrderAsync(Guid orderId, DateTime shipmentDate);
         Task CloseOrderAsync(Guid orderId);
         Task DeleteOrderAsync(Guid orderId);
+        Task<OrderListPagingDto> GetAllOrdersWithPagingAsync(int pageNumber, int pageSize);
     }
 }

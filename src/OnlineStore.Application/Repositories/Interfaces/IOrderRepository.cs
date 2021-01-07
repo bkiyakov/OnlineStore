@@ -14,5 +14,6 @@ namespace OnlineStore.Application.Repositories.Interfaces
         Task UpdateOrderAsync(Order order);
         Task DeleteOrderByIdAsync(Guid orderId);
         Task<int> GetNewOrderNumberAsync();
+        Task<IList<Order>> GetAllOrdersWithPagingAsync(int pageNumber, int pageSize);
     }
 }

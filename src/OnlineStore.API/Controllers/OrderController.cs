@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineStore.API.Controllers
 {
@@ -32,13 +33,13 @@ namespace OnlineStore.API.Controllers
         [HttpGet]
         [Route("get-all")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<OrderDto>))]
-        public async Task<IActionResult> GetAllOrders()
+        public async Task<IActionResult> GetAllOrders([FromQuery] OrderGetAllPagedInputModel model)
         {
-            var orders = await orderRepository.GetAllOrdersAsync();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var result = mapper.Map<IEnumerable<OrderDto>>(orders);
+            var orders = await orderService.GetAllOrdersWithPagingAsync(model.PageNumber, model.PageSize);
 
-            return Ok(result);
+            return Ok(orders);
         }
 
         //[Authorize(Role="User")]

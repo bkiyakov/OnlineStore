@@ -113,5 +113,24 @@ namespace OnlineStore.Application.Services
                 }
             }
         }
+
+        public async Task<OrderListPagingDto> GetAllOrdersWithPagingAsync(int pageNumber, int pageSize)
+        {
+            var ordersFromRepo = await orderRepository.GetAllOrdersWithPagingAsync(pageNumber, pageSize);
+
+            bool hasNext = ordersFromRepo.Count == pageSize; // При остатке заказов, равных ровно нулю будет показывать true
+
+            var orderDtos = mapper.Map<IList<OrderDto>>(ordersFromRepo);
+
+            var orderListPagingDto = new OrderListPagingDto()
+            {
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                HasNext = hasNext,
+                OrderList = orderDtos
+            };
+
+            return orderListPagingDto;
+        }
     }
 }
