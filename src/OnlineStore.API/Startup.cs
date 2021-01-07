@@ -13,6 +13,9 @@ using OnlineStore.Application.Services;
 using AutoMapper;
 using OnlineStore.Application.Mapper;
 using OnlineStore.API.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using OnlineStore.API.Identity.Jwt;
 
 namespace OnlineStore.API
 {
@@ -35,7 +38,21 @@ namespace OnlineStore.API
                 options.UseSqlServer(
                     Configuration.GetConnectionString("StoreDbConnection")));
 
-            services.AddAuthentication();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateAudience = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true
+                    };
+                });
             services.ConfigureIdentity();
 
             services.AddTransient<IProductRepository, ProductRepository>();
