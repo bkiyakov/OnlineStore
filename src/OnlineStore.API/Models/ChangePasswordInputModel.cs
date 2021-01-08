@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 
 namespace OnlineStore.API.Models
 {
-    public class UserRegistrationInputModel
+    public class ChangePasswordInputModel
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        [Required(ErrorMessage = "Эл. почта обязательна")]
-        public string Email { get; set; }
-        [Required(ErrorMessage = "Пароль обязателен")]
-        public string Password { get; set; }
+        [Required(ErrorMessage = "Старый пароль обязателен")]
+        public string CurrentPassword { get; set; }
+        [Required(ErrorMessage = "Новый пароль обязателен")]
+        public string NewPassword { get; set; }
         [Required]
         public string Role { get; set; }
         [Compare("Password", ErrorMessage = "Пароли должны совпадать")]
