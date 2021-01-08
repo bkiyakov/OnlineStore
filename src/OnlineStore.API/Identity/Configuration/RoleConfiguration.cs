@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineStore.API.Identity
+namespace OnlineStore.API.Identity.Configuration
 {
     public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
     {
@@ -15,13 +15,14 @@ namespace OnlineStore.API.Identity
             builder.HasData(
                 new IdentityRole
                 {
-                    Name = "Manager",
-                    NormalizedName = "MANAGER"
+                    Id = "1a1a111a-1a1a-223b-33bb-444c56df7890",
+                    Name = Roles.Manager,
+                    NormalizedName = Roles.Manager.ToUpper()
                 },
                 new IdentityRole
                 {
-                    Name = "User",
-                    NormalizedName = "USER"
+                    Name = Roles.User,
+                    NormalizedName = Roles.User.ToUpper()
                 }
             );
         }

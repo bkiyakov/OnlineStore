@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using OnlineStore.API.Identity.Configuration;
 using OnlineStore.API.Identity.Models;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace OnlineStore.API.Identity
             base.OnModelCreating(builder);
 
             builder.ApplyConfiguration(new RoleConfiguration());
+            builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new UserRolesConfiguration());
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using OnlineStore.API.Identity;
 using OnlineStore.API.Identity.Jwt;
 using OnlineStore.API.Identity.Models;
 using OnlineStore.API.Models;
@@ -54,7 +55,7 @@ namespace OnlineStore.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            await userManager.AddToRoleAsync(user, "User");
+            await userManager.AddToRoleAsync(user, Roles.User);
 
             return Ok();
         }
@@ -95,8 +96,40 @@ namespace OnlineStore.API.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = Roles.Manager)]
+        [HttpPost]
+        [Route("register-manager")]
+        public async Task<IActionResult> RegisterManager([FromBody] UserRegistrationInputModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        [Authorize(Roles = "User")]
+            var user = new User
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                UserName = model.Email,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.TryAddModelError(error.Code, error.Description);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            await userManager.AddToRoleAsync(user, Roles.Manager);
+
+            return Ok();
+        }
+
+        [Authorize(Roles = Roles.User)]
         [HttpGet]
         [Route("test")]
         public async Task<IActionResult> Test()
