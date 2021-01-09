@@ -20,7 +20,7 @@ namespace OnlineStore.Data.Repositories
 
         public async Task<Product> AddProductAsync(Product newProduct)
         {
-            var addedProduct = context.Add(newProduct);
+            var addedProduct = context.Products.Add(newProduct);
 
             await context.SaveChangesAsync();
 

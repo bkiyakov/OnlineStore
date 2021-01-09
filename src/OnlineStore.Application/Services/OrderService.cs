@@ -16,22 +16,25 @@ namespace OnlineStore.Application.Services
         private readonly IOrderRepository orderRepository;
         private readonly IOrderElementRepository orderElementRepository;
         private readonly IOrderElementService orderElementService;
+        private readonly ICustomerService customerService;
         private readonly IMapper mapper;
         public OrderService(IOrderRepository orderRepository,
             IOrderElementRepository orderElementRepository,
             IOrderElementService orderElementService,
+            ICustomerService customerService,
             IMapper mapper)
         {
             this.orderRepository = orderRepository;
             this.orderElementRepository = orderElementRepository;
             this.orderElementService = orderElementService;
+            this.customerService = customerService;
             this.mapper = mapper;
         }
         public async Task<OrderDto> AddOrderAsync(ListOfProductsAndCountsDto productsAndCountsList,
-            int userId)
+            string userId)
         {
             // Получаем id заказчика по id пользователя
-            Guid customerId = Guid.NewGuid(); // TODO поменять на реальное получение
+            Guid customerId = await customerService.GetCustomerIdByUserIdAsync(userId);
 
             Order order = new Order
             {

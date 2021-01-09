@@ -12,6 +12,8 @@ namespace OnlineStore.Application.Mapper
                 .ReverseMap();
             CreateMap<Order, OrderDto>()
                 .ReverseMap();
+            CreateMap<Customer, CustomerDto>()
+                .ReverseMap();
             CreateMap<OrderElement, OrderElementDto>()
                 .ForMember(dest => dest.TotalPrice,
                     opt => opt.MapFrom(src => src.ItemPrice * src.ItemsCount))

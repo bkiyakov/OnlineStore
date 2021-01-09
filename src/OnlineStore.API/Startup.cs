@@ -38,7 +38,12 @@ namespace OnlineStore.API
                 options.UseSqlServer(
                     Configuration.GetConnectionString("StoreDbConnection")));
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.ConfigureIdentity();
+
+            services.AddAuthentication(opt =>{
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = true;
@@ -53,15 +58,16 @@ namespace OnlineStore.API
                         ValidateIssuerSigningKey = true
                     };
                 });
-            services.ConfigureIdentity();
 
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
             services.AddTransient<IOrderElementRepository, OrderElementRepository>();
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IDiscountService, DiscountService>();
             services.AddScoped<IOrderElementService, OrderElementService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICustomerService, CustomerService>();
 
 
             services.AddAutoMapper(typeof(MapperProfiles));

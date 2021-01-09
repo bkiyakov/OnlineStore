@@ -2,7 +2,6 @@
 using OnlineStore.Application.Exceptions;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.API.Models;
-using OnlineStore.Domain.Models;
 using System;
 using System.Threading.Tasks;
 using AutoMapper;

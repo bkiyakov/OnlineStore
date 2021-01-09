@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace OnlineStore.API.Models
+namespace OnlineStore.Domain.Models
 {
-    public class EditUserInputModel
+    public class Customer
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        [Required]
+        public Guid Id { get; set; }
+        [Required]
+        public string UserId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
-        [RegularExpression(@"\d{4}-\d{4}",
+        [RegularExpression(@"\d{4}-^\d{4}$",
             ErrorMessage = "Код заказчика не соответствует шаблону")]
         public string Code { get; set; }
         public string Address { get; set; }

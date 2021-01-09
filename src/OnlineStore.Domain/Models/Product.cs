@@ -13,7 +13,8 @@ namespace OnlineStore.Domain.Models
         [Required]
         public Guid Id { get; set; }
         [Required]
-        [RegularExpression(@"\d{2}-\d{4}-[A-Z]{2}\d{2}", ErrorMessage = "Код товара не соответствует шаблону")]
+        [RegularExpression(@"\d{2}-\d{4}-[A-Z]{2}\d{2}",
+            ErrorMessage = "Код товара не соответствует шаблону")]
         public string Code { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }

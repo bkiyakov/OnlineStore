@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
+using OnlineStore.API.Identity.Models;
+using Microsoft.AspNetCore.Identity;
+using OnlineStore.API.Identity;
+using System.Security.Claims;
 
 namespace OnlineStore.API.Controllers
 {
@@ -18,16 +22,19 @@ namespace OnlineStore.API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+        private readonly UserManager<User> userManager;
         private readonly IOrderRepository orderRepository;
         private readonly IOrderService orderService;
         private readonly IMapper mapper;
-        public OrderController(IOrderRepository orderRepository,
+        public OrderController(UserManager<User> userManager,
+            IOrderRepository orderRepository,
             IOrderService orderService,
             IMapper mapper)
         {
             this.orderRepository = orderRepository;
             this.orderService = orderService;
             this.mapper = mapper;
+            this.userManager = userManager;
         }
 
         //[Authorize(Role="Manager")]
@@ -43,7 +50,7 @@ namespace OnlineStore.API.Controllers
             return Ok(orders);
         }
 
-        //[Authorize(Roles = "User")]
+        [Authorize(Roles = Roles.User)]
         [HttpPost]
         [Route("add")]
         [Consumes("application/json")]
@@ -53,7 +60,7 @@ namespace OnlineStore.API.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             //Получаем userId из контекста
-            var userId = 1; // TODO поменять на реальный
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var productsAndCountsList = new List<ProductAndCountDto>();
 

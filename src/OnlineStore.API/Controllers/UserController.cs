@@ -8,6 +8,8 @@ using OnlineStore.API.Identity;
 using OnlineStore.API.Identity.Jwt;
 using OnlineStore.API.Identity.Models;
 using OnlineStore.API.Models;
+using OnlineStore.Application.Dtos;
+using OnlineStore.Application.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,11 +26,14 @@ namespace OnlineStore.API.Controllers
     {
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly ICustomerService customerService;
 
-        public UserController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UserController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager,
+            ICustomerService customerService)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.customerService = customerService;
         }
 
         [HttpPost]
@@ -71,6 +76,40 @@ namespace OnlineStore.API.Controllers
             }
 
             await userManager.AddToRoleAsync(user, model.Role);
+
+            var userId = await userManager.GetUserIdAsync(user);
+            var customerDto = new CustomerDto
+            {
+                UserId = userId,
+                Name = model.Name,
+                Code = model.Code,
+                Address = model.Address,
+                Discount = model.Discount
+            };
+
+            bool isCustomerAdded = false;
+
+            try
+            {
+                var addedCustomer = await customerService.AddCustomerAsync(customerDto);
+
+                if(addedCustomer != null)
+                {
+                    isCustomerAdded = true;
+                } else
+                {
+                    return BadRequest("Регистрация не удалась");
+                }
+            }
+            finally
+            {
+
+                if (!isCustomerAdded)
+                {
+                    await userManager.DeleteAsync(user);
+                }
+            }
+            
 
             return Ok();
         }
@@ -207,6 +246,7 @@ namespace OnlineStore.API.Controllers
 
             var claims = await userManager.GetClaimsAsync(user);
             claims.Add(new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
             claims.Add(new Claim(ClaimTypes.Role, (await userManager.GetRolesAsync(user))[0]));
 
             var jwt = new JwtSecurityToken(
@@ -254,7 +294,7 @@ namespace OnlineStore.API.Controllers
             }
         }
 
-        [Authorize(Roles = Roles.User)]
+        //[Authorize(Roles = Roles.User)]
         [HttpGet]
         [Route("test")]
         public async Task<IActionResult> Test()
