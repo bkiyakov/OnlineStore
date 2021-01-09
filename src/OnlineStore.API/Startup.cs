@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OnlineStore.API.Data;
 using OnlineStore.Application.Repositories.Interfaces;
 using OnlineStore.Data;
 using OnlineStore.Data.Repositories;
@@ -13,6 +12,10 @@ using OnlineStore.Application.Services.Interfaces;
 using OnlineStore.Application.Services;
 using AutoMapper;
 using OnlineStore.Application.Mapper;
+using OnlineStore.API.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using OnlineStore.API.Identity.Jwt;
 
 namespace OnlineStore.API
 {
@@ -31,11 +34,26 @@ namespace OnlineStore.API
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddDbContext<StoreDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("StoreDbConnection")));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = AuthOptions.ISSUER,
+                        ValidateAudience = true,
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        ValidateIssuerSigningKey = true
+                    };
+                });
+            services.ConfigureIdentity();
 
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IOrderRepository, OrderRepository>();
@@ -48,7 +66,6 @@ namespace OnlineStore.API
 
             services.AddAutoMapper(typeof(MapperProfiles));
 
-            services.AddRazorPages();
             services.AddControllers().AddNewtonsoftJson();
         }
 

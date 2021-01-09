@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineStore.API.Controllers
 {
@@ -42,7 +43,7 @@ namespace OnlineStore.API.Controllers
             return Ok(orders);
         }
 
-        //[Authorize(Role="User")]
+        //[Authorize(Roles = "User")]
         [HttpPost]
         [Route("add")]
         [Consumes("application/json")]
@@ -116,25 +117,6 @@ namespace OnlineStore.API.Controllers
             await orderService.DeleteOrderAsync(orderIdGuid);
 
             return Ok();
-        }
-
-        [HttpGet]
-        [Route("test")]
-        public IActionResult Test()
-        {
-            var orderViewModel = new ListOfProductsAndCountsDto
-            {
-                ProductsIdAndCountsList = new List<ProductAndCountDto>
-                {
-                    new ProductAndCountDto
-                    {
-                        ProductId = Guid.NewGuid().ToString(),
-                        ProductCount = 2
-                    }
-                }
-            };
-
-            return Ok(orderViewModel);
         }
     }
 }
